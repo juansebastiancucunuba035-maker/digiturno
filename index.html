@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="es">
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    background-color: #333;
+    color: white;
+    padding: 20px 0;
+}
+
+.sidebar nav ul {
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar nav ul li a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 15px 20px;
+    border-left: 3px solid transparent;
+}
+
+.sidebar nav ul li a:hover,
+.sidebar nav ul li a.active {
+    background-color: #575757;
+    border-left-color: #4CAF50;
+}
+
+.content {
+    flex: 1;
+    padding: 30px;
+    background-color: white;
+    margin: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.content section {
+    display: none;
+}
+
+.content section.active {
+    display: block;
+}
+
+.content h1 {
+    color: #333;
+    margin-top: 0;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 32px;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
+}
+
+.content h2 {
+    color: #555;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.content p {
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    height: 80px;
+    resize: vertical;
+}
+
+.btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+.btn:hover {
+    background-color: #45a049;
+}
+
+.btn-secondary {
+    background-color: #666;
+}
+
+.btn-secondary:hover {
+    background-color: #555;
+}
+
+.btn-danger {
+    background-color: #f44336;
+}
+
+.btn-danger:hover {
+    background-color: #da190b;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #333;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status.pendiente {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status.confirmado {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status.completado {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status.cancelado {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border-left: 4px solid #4CAF50;
+}
+
+.stat-number {
+    font-size: 2em;
+    font-weight: bold;
+    color: #333;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 14px;
+}
+
+.search-box {
+    margin-bottom: 20px;
+}
+
+.search-box input {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+    }
+    
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .search-box input {
+        width: 100%;
+    }
+}
+</style>
+
+<head>
+    <title>Gestión de Turnos</title>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <nav>
+            <ul>
+                <li><a href="index.html" onclick="showSection('dashboard')" class="nav-link active">📊 Dashboard</a></li>
+                <li><a href="#" onclick="showSection('nuevo-turno')" class="nav-link">➕ Nuevo Turno</a></li>
+                <li><a href="#" onclick="showSection('lista-turnos')" class="nav-link">📋 Lista de Turnos</a></li>
+                <li><a href="#" onclick="showSection('calendario')" class="nav-link">📅 Calendario</a></li>
+                <li><a href="#" onclick="showSection('clientes')" class="nav-link">👥 Clientes</a></li>
+                <li><a href="#" onclick="showSection('reportes')" class="nav-link">📈 Reportes</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="content">
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="active">
+            <h1>Dashboard - Gestión de Turnos</h1>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="turnos-hoy">12</div>
+                    <div class="stat-label">Turnos Hoy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="turnos-pendientes">5</div>
+                    <div class="stat-label">Pendientes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="turnos-completados">7</div>
+                    <div class="stat-label">Completados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="clientes-total">48</div>
+                    <div class="stat-label">Total Clientes</div>
+                </div>
+            </div>
+
+            <h2>Próximos Turnos</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Cliente</th>
+                        <th>Servicio</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="proximos-turnos">
+                    <tr>
+                        <td>14:00</td>
+                        <td>María González</td>
+                        <td>Consulta General</td>
+                        <td><span class="status confirmado">Confirmado</span></td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="completarTurno(1)">Completar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>15:30</td>
+                        <td>Juan Pérez</td>
+                        <td>Revisión</td>
+                        <td><span class="status pendiente">Pendiente</span></td>
+                        <td>
+                            <button class="btn" onclick="confirmarTurno(2)">Confirmar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- NUEVO TURNO -->
+        
+        <head>
+
+<section id="nuevo-turno">
+            <h1>Nuevo Turno</h1>
+            
+            <form id="form-nuevo-turno" onsubmit="crearTurno(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cliente">Cliente:</label>
+                        <select id="cliente" required>
+                            <option value="">Seleccionar cliente...</option>
+                            <option value="1">María González</option>
+                            <option value="2">Juan Pérez</option>
+                            <option value="3">Ana López</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="servicio">Servicio:</label>
+                        <select id="servicio" required>
+                            <option value="">Seleccionar servicio...</option>
+                            <option value="consulta">Consulta General</option>
+                            <option value="revision">Revisión</option>
+                            <option value="tratamiento">Tratamiento</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fecha">Fecha:</label>
+                        <input type="date" id="fecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="hora">Hora:</label>
+                        <input type="time" id="hora" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="observaciones">Observaciones:</label>
+                    <textarea id="observaciones" placeholder="Observaciones adicionales..."></textarea>
+                </div>
+
+                <button type="submit" class="btn">Crear Turno</button>
+                <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">Limpiar</button>
+            </form>
+        </section>
+
+
+        <!-- LISTA DE TURNOS -->
+        <section id="lista-turnos">
+            <h1>Lista de Turnos</h1>
+            
+            <div class="search-box">
+                <input type="text" id="buscar-turno" placeholder="Buscar por cliente o servicio..." onkeyup="filtrarTurnos()">
+                <button class="btn" onclick="filtrarTurnos()">Buscar</button>
+            </div>
+
+            <table class="table" id="tabla-turnos">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Cliente</th>
+                        <th>Servicio</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-turnos-body">
+                    <tr>
+                        <td>001</td>
+                        <td>2024-01-15</td>
+                        <td>14:00</td>
+                        <td>María González</td>
+                        <td>Consulta General</td>
+                        <td><span class="status confirmado">Confirmado</span></td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="editarTurno(1)">Editar</button>
+                            <button class="btn btn-danger" onclick="cancelarTurno(1)">Cancelar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>002</td>
+                        <td>2024-01-15</td>
+                        <td>15:30</td>
+                        <td>Juan Pérez</td>
+                        <td>Revisión</td>
+                        <td><span class="status pendiente">Pendiente</span></td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="editarTurno(2)">Editar</button>
+                            <button class="btn btn-danger" onclick="cancelarTurno(2)">Cancelar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- CALENDARIO -->
+        <section id="calendario">
+            <h1>Calendario de Turnos</h1>
+            <p>Vista de calendario con todos los turnos programados.</p>
+            
+            <div style="background: #f9f9f9; padding: 40px; text-align: center; border-radius: 8px; margin-top: 20px;">
+                <h3>📅 Vista de Calendario</h3>
+                <p>Aquí se mostraría un calendario interactivo con los turnos</p>
+                <p><em>Funcionalidad de calendario en desarrollo</em></p>
+            </div>
+        </section>
+
+        <!-- CLIENTES -->
+        <section id="clientes">
+            <h1>Gestión de Clientes</h1>
+            
+            <button class="btn" onclick="nuevoCliente()">➕ Nuevo Cliente</button>
+            
+            <table class="table" style="margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th>Turnos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>001</td>
+                        <td>María González</td>
+                        <td>+57 300 123 4567</td>
+                        <td>maria@email.com</td>
+                        <td>5</td>
+                        <td>
+                            <button class="btn btn-secondary">Editar</button>
+                            <button class="btn">Ver Historial</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>002</td>
+                        <td>Juan Pérez</td>
+                        <td>+57 300 987 6543</td>
+                        <td>juan@email.com</td>
+                        <td>3</td>
+                        <td>
+                            <button class="btn btn-secondary">Editar</button>
+                            <button class="btn">Ver Historial</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- REPORTES -->
+        <section id="reportes">
+            <h1>Reportes y Estadísticas</h1>
+            
+            <div class="form-row" style="margin-bottom: 30px;">
+                <div class="form-group">
+                    <label for="fecha-desde">Desde:</label>
+                    <input type="date" id="fecha-desde">
+                </div>
+                <div class="form-group">
+                    <label for="fecha-hasta">Hasta:</label>
+                    <input type="date" id="fecha-hasta">
+                </div>
+                <div class="form-group">
+                    <button class="btn" onclick="generarReporte()" style="margin-top: 25px;">Generar Reporte</button>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">156</div>
+                    <div class="stat-label">Turnos del Mes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">89%</div>
+                    <div class="stat-label">Tasa de Asistencia</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">$2,450</div>
+                    <div class="stat-label">Ingresos del Mes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Nuevos Clientes</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Base de datos en memoria
+        let turnos = [
+            {id: 1, clienteId: 1, cliente: 'María González', servicio: 'Consulta General', fecha: '2024-01-15', hora: '14:00', estado: 'confirmado', observaciones: ''},
+            {id: 2, clienteId: 2, cliente: 'Juan Pérez', servicio: 'Revisión', fecha: '2024-01-15', hora: '15:30', estado: 'pendiente', observaciones: ''},
+            {id: 3, clienteId: 3, cliente: 'Ana López', servicio: 'Tratamiento', fecha: '2024-01-16', hora: '10:00', estado: 'confirmado', observaciones: 'Primera cita'}
+        ];
+
+        let clientes = [
+            {id: 1, nombre: 'María González', telefono: '+57 300 123 4567', email: 'maria@email.com'},
+            {id: 2, nombre: 'Juan Pérez', telefono: '+57 300 987 6543', email: 'juan@email.com'},
+            {id: 3, nombre: 'Ana López', telefono: '+57 300 555 1234', email: 'ana@email.com'}
+        ];
+
+        let proximoId = 4;
+
+        // Función para mostrar secciones
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Actualizar contenido según la sección
+            if (sectionId === 'dashboard') {
+                actualizarDashboard();
+            } else if (sectionId === 'lista-turnos') {
+                actualizarListaTurnos();
+            } else if (sectionId === 'clientes') {
+                actualizarListaClientes();
+            }
+        }
+
+        // Función para crear nuevo turno
+        function crearTurno(event) {
+            event.preventDefault();
+            const clienteId = document.getElementById('cliente').value;
+            const servicio = document.getElementById('servicio').value;
+            const fecha = document.getElementById('fecha').value;
+            const hora = document.getElementById('hora').value;
+            const observaciones = document.getElementById('observaciones').value;
+
+            if (clienteId && servicio && fecha && hora) {
+                const cliente = clientes.find(c => c.id == clienteId);
+                const nuevoTurno = {
+                    id: proximoId++,
+                    clienteId: parseInt(clienteId),
+                    cliente: cliente.nombre,
+                    servicio: servicio,
+                    fecha: fecha,
+                    hora: hora,
+                    estado: 'pendiente',
+                    observaciones: observaciones
+                };
+                
+                turnos.push(nuevoTurno);
+                alert('Turno creado exitosamente para ' + cliente.nombre);
+                limpiarFormulario();
+                actualizarEstadisticas();
+            }
+        }
+
+        // Función para limpiar formulario
+        function limpiarFormulario() {
+            document.getElementById('form-nuevo-turno').reset();
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').value = hoy;
+        }
+
+        // Función para filtrar turnos
+        function filtrarTurnos() {
+            const filtro = document.getElementById('buscar-turno').value.toLowerCase();
+            const filas = document.querySelectorAll('#lista-turnos-body tr');
+            
+            filas.forEach(fila => {
+                const texto = fila.textContent.toLowerCase();
+                fila.style.display = texto.includes(filtro) ? '' : 'none';
+            });
+        }
+
+        // Función para confirmar turno
+        function confirmarTurno(id) {
+            const turno = turnos.find(t => t.id === id);
+            if (turno) {
+                turno.estado = 'confirmado';
+                actualizarDashboard();
+                actualizarListaTurnos();
+                alert('Turno confirmado para ' + turno.cliente);
+            }
+        }
+
+        // Función para completar turno
+        function completarTurno(id) {
+            const turno = turnos.find(t => t.id === id);
+            if (turno) {
+                turno.estado = 'completado';
+                actualizarDashboard();
+                actualizarListaTurnos();
+                alert('Turno completado para ' + turno.cliente);
+            }
+        }
+
+        // Función para cancelar turno
+        function cancelarTurno(id) {
+            if (confirm('¿Está seguro de cancelar este turno?')) {
+                const turno = turnos.find(t => t.id === id);
+                if (turno) {
+                    turno.estado = 'cancelado';
+                    actualizarDashboard();
+                    actualizarListaTurnos();
+                    alert('Turno cancelado para ' + turno.cliente);
+                }
+            }
+        }
+
+        // Función para editar turno
+        function editarTurno(id) {
+            const turno = turnos.find(t => t.id === id);
+            if (turno) {
+                document.getElementById('cliente').value = turno.clienteId;
+                document.getElementById('servicio').value = turno.servicio;
+                document.getElementById('fecha').value = turno.fecha;
+                document.getElementById('hora').value = turno.hora;
+                document.getElementById('observaciones').value = turno.observaciones;
+                
+                // Cambiar a la sección de nuevo turno
+                showSection('nuevo-turno');
+                document.querySelector('a[onclick="showSection(\'nuevo-turno\')"]').click();
+                
+                // Eliminar el turno actual para que se cree uno nuevo
+                turnos = turnos.filter(t => t.id !== id);
+            }
+        }
+
+        // Función para actualizar dashboard
+        function actualizarDashboard() {
+            const hoy = new Date().toISOString().split('T')[0];
+            const turnosHoy = turnos.filter(t => t.fecha === hoy);
+            const turnosPendientes = turnos.filter(t => t.estado === 'pendiente');
+            const turnosCompletados = turnos.filter(t => t.estado === 'completado');
+
+            document.getElementById('turnos-hoy').textContent = turnosHoy.length;
+            document.getElementById('turnos-pendientes').textContent = turnosPendientes.length;
+            document.getElementById('turnos-completados').textContent = turnosCompletados.length;
+            document.getElementById('clientes-total').textContent = clientes.length;
+
+            // Actualizar próximos turnos
+            const proximosTurnos = turnos
+                .filter(t => t.fecha >= hoy && t.estado !== 'cancelado')
+                .sort((a, b) => new Date(a.fecha + ' ' + a.hora) - new Date(b.fecha + ' ' + b.hora))
+                .slice(0, 5);
+
+            const tbody = document.getElementById('proximos-turnos');
+            tbody.innerHTML = '';
+
+            proximosTurnos.forEach(turno => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${turno.hora}</td>
+                    <td>${turno.cliente}</td>
+                    <td>${turno.servicio}</td>
+                    <td><span class="status ${turno.estado}">${capitalizarPrimera(turno.estado)}</span></td>
+                    <td>
+                        ${turno.estado === 'pendiente' ? 
+                            `<button class="btn" onclick="confirmarTurno(${turno.id})">Confirmar</button>` :
+                            `<button class="btn btn-secondary" onclick="completarTurno(${turno.id})">Completar</button>`
+                        }
+                    </td>
+                `;
+                tbody.appendChild(fila);
+            });
+        }
+
+        // Función para actualizar lista de turnos
+        function actualizarListaTurnos() {
+            const tbody = document.getElementById('lista-turnos-body');
+            tbody.innerHTML = '';
+
+            turnos.forEach(turno => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${String(turno.id).padStart(3, '0')}</td>
+                    <td>${turno.fecha}</td>
+                    <td>${turno.hora}</td>
+                    <td>${turno.cliente}</td>
+                    <td>${turno.servicio}</td>
+                    <td><span class="status ${turno.estado}">${capitalizarPrimera(turno.estado)}</span></td>
+                    <td>
+                        <button class="btn btn-secondary" onclick="editarTurno(${turno.id})">Editar</button>
+                        <button class="btn btn-danger" onclick="cancelarTurno(${turno.id})">Cancelar</button>
+                    </td>
+                `;
+                tbody.appendChild(fila);
+            });
+        }
+
+        // Función para actualizar lista de clientes
+        function actualizarListaClientes() {
+            const tbody = document.querySelector('#clientes table tbody');
+            tbody.innerHTML = '';
+
+            clientes.forEach(cliente => {
+                const turnosCliente = turnos.filter(t => t.clienteId === cliente.id).length;
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${String(cliente.id).padStart(3, '0')}</td>
+                    <td>${cliente.nombre}</td>
+                    <td>${cliente.telefono}</td>
+                    <td>${cliente.email}</td>
+                    <td>${turnosCliente}</td>
+                    <td>
+                        <button class="btn btn-secondary" onclick="editarCliente(${cliente.id})">Editar</button>
+                        <button class="btn" onclick="verHistorial(${cliente.id})">Ver Historial</button>
+                    </td>
+                `;
+                tbody.appendChild(fila);
+            });
+        }
+
+        // Función para nuevo cliente
+        function nuevoCliente() {
+            const nombre = prompt('Nombre del cliente:');
+            const telefono = prompt('Teléfono:');
+            const email = prompt('Email:');
+            
+            if (nombre && telefono && email) {
+                const nuevoCliente = {
+                    id: clientes.length + 1,
+                    nombre: nombre,
+                    telefono: telefono,
+                    email: email
+                };
+                clientes.push(nuevoCliente);
+                actualizarListaClientes();
+                cargarClientes();
+                alert('Cliente agregado exitosamente');
+            }
+        }
+
+        // Función para editar cliente
+        function editarCliente(id) {
+            const cliente = clientes.find(c => c.id === id);
+            if (cliente) {
+                const nombre = prompt('Nombre:', cliente.nombre) || cliente.nombre;
+                const telefono = prompt('Teléfono:', cliente.telefono) || cliente.telefono;
+                const email = prompt('Email:', cliente.email) || cliente.email;
+                
+                cliente.nombre = nombre;
+                cliente.telefono = telefono;
+                cliente.email = email;
+                
+                actualizarListaClientes();
+                cargarClientes();
+                alert('Cliente actualizado');
+            }
+        }
+
+        // Función para ver historial
+        function verHistorial(clienteId) {
+            const cliente = clientes.find(c => c.id === clienteId);
+            const turnosCliente = turnos.filter(t => t.clienteId === clienteId);
+            
+            let historial = `Historial de ${cliente.nombre}:\n\n`;
+            turnosCliente.forEach(turno => {
+                historial += `${turno.fecha} ${turno.hora} - ${turno.servicio} (${turno.estado})\n`;
+            });
+            
+            alert(historial || 'No hay turnos registrados');
+        }
+
+        // Función para generar reporte
+        function generarReporte() {
+            const fechaDesde = document.getElementById('fecha-desde').value;
+            const fechaHasta = document.getElementById('fecha-hasta').value;
+            
+            if (fechaDesde && fechaHasta) {
+                const turnosFiltrados = turnos.filter(t => 
+                    t.fecha >= fechaDesde && t.fecha <= fechaHasta
+                );
+                
+                const reporte = {
+                    totalTurnos: turnosFiltrados.length,
+                    confirmados: turnosFiltrados.filter(t => t.estado === 'confirmado').length,
+                    completados: turnosFiltrados.filter(t => t.estado === 'completado').length,
+                    cancelados: turnosFiltrados.filter(t => t.estado === 'cancelado').length
+                };
+                
+                alert(`Reporte del ${fechaDesde} al ${fechaHasta}:\n\n` +
+                      `Total de turnos: ${reporte.totalTurnos}\n` +
+                      `Confirmados: ${reporte.confirmados}\n` +
+                      `Completados: ${reporte.completados}\n` +
+                      `Cancelados: ${reporte.cancelados}`);
+            } else {
+                alert('Seleccione el rango de fechas');
+            }
+        }
+
+        // Función auxiliar para capitalizar primera letra
+        function capitalizarPrimera(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Función para cargar clientes en el select
+        function cargarClientes() {
+            const selectCliente = document.getElementById('cliente');
+            selectCliente.innerHTML = '<option value="">Seleccionar cliente...</option>';
+            
+            clientes.forEach(cliente => {
+                const option = document.createElement('option');
+                option.value = cliente.id;
+                option.textContent = cliente.nombre;
+                selectCliente.appendChild(option);
+            });
+        }
+
+        // Función para actualizar estadísticas
+        function actualizarEstadisticas() {
+            actualizarDashboard();
+        }
+
+        // Inicialización al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            const hoy = new Date().toISOString().split('T')[0];
+            const fechaInput = document.getElementById('fecha');
+            if (fechaInput) {
+                fechaInput.value = hoy;
+            }
+            
+            cargarClientes();
+            actualizarDashboard();
+        });
+    </script>
+</body>
+</html>

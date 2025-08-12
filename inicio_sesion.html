@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <meta charset="UTF-8">
+   <title> digiturnos </title>
+   <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+ <body>
+   <style>
+   body {
+  background-image: url('DGturnos.png');
+  background-position:under;
+  background-size: cover;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+   }
+
+    input[type="text"], input[type="password"] {
+      width: 20%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px 0;
+    }
+
+    input[type="submit"] {
+      width: 40%;
+      background-color:    #4CAF50;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+
+    .error {
+      color: red;
+    }
+    h2{
+      text-align: center;
+      font-size: 350%;
+      font-family: fantasy;
+      margin: 5%;
+      margin-top: 300px;
+    }
+
+    h4{
+     text-align:center;
+    }
+   
+       h3{
+   font-style:oblique;
+   text-align: center;
+   font-family:system-ui;
+   font-size: 50px;;
+  }
+
+    h3 button{
+   font-size:large;
+   color:white;
+   background-color: #818181;
+  
+   }
+
+    h6 button{
+      display: block; /* Hace que el botón ocupe toda la anchura disponible */
+      margin-left: auto; /*  Empieza a buscar espacio a la derecha */
+      margin-right: auto; /* Empieza a buscar espacio a la izquierda */
+      color: white;
+      text-align: center;
+      background-color: #818181;
+      font-size:large;
+    }
+
+   footer {
+   background-color: #8f9294;
+   color: #ffffff;
+   padding: 10px;
+   position:fixed;
+   width: 100%;
+   bottom: 0;
+   text-align: center;
+   }
+
+
+</style>
+
+
+  <h2>Inicia sesión</h2>
+  <form id="loginForm">
+
+   <h4>
+    <label>Usuario:</label><br>
+    <input type="text" id="usuario" required><br><br>
+    <label>Contraseña:</label><br>
+    <input type="password" id="contrasena" required><br><br>
+    </h4>
+    
+    <h6>
+    <button type="submit">Iniciar Sesión</button>
+    <h3><button id="miBotonRedireccion">Registrarme</button></h3> 
+    </form>
+    </h6>
+   
+  
+  <script>
+
+    // Obtener una referencia al botón por su ID
+const boton = document.getElementById('miBotonRedireccion');
+
+// Añadir un "escuchador de eventos" para cuando se haga clic en el botón
+boton.addEventListener('click', function() {
+  // Redirigir a la nueva página
+  window.location.href = 'registro.html';
+
+});
+
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault(); 
+
+      const usuario = document.getElementById("usuario").value;
+      const contrasena = document.getElementById("contrasena").value;
+
+      // Simulación de verificación (¡nunca hacer esto en producción!)
+      if (usuario === "admin" && contrasena === "1234") {
+        // Redirigir a otra página
+        window.location.href = "index.html"; // Cambia a la URL que desees
+      } else {
+      alert("Credenciales incorrectas");
+      }
+    });
+  </script>>
+
+<footer> Todos los derechos reservados </footer>
+
+ </html>
